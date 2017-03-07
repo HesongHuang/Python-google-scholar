@@ -910,6 +910,8 @@ class ScholarQuerier(object):
         self.clear_articles()
         self.query = query
         self.diction={}
+        self.jour=0
+        self.conf=0
         self.list=[]
         startSearchNumber = 0
         scholarResults    = ScholarConf.MAX_RESULTS
@@ -956,6 +958,11 @@ class ScholarQuerier(object):
         
         for m in a:
             if "journal" in m:
+               self.jour=self.jour+1
+               if m not in self.diction:
+                  self.diction[m]= self.diction.get(m,0)+1
+            elif "booktitle" in m:
+               self.conf= self.conf+1
                if m not in self.diction:
                   self.diction[m]= self.diction.get(m,0)+1
             elif "title" in m:
@@ -1057,8 +1064,8 @@ def csv(querier, header=False, sep='|'):
         print(encode(result))
         header = False
 
-def store(data):
-    with open('title.json', 'w') as json_file:
+def store(data,file_name):
+    with open(file_name, 'w') as json_file:
         json_file.write(json.dumps(data))
 
 def citation_export(querier):
@@ -1068,8 +1075,11 @@ def citation_export(querier):
         print (encode(art.as_citation()) +'\n')
     
     print (querier.diction)
+    print ("the number of journal is:",querier.jour)
+    store(querier.diction,'journal.json')
     print (querier.list)
-    store(querier.list)
+    print ("the number of conference is:",querier.conf)
+    store(querier.list,'title.json')
     
     
 
